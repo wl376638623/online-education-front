@@ -106,25 +106,50 @@
         this.getList()
       },
       methods: {//创建具体的方法调用teacher.js定义的方法
+       //获取全部数据方法
         getList(page =1) {
           this.page=page
           edu.getTeacherListPage(this.page, this.limit, this.teacherQuery)
             .then(response => {//请求成功
               this.list=response.data.rows;
               this.total = response.data.total;
-              console.log(this.list);
-              console.log(this.total);
             })
             .catch(error=>{//请求失败
-              console.log(error)
             })
 
         },
+        //清空表单方法
         resetData(){
           //清空表单
           this.teacherQuery = {}
           //查询数据
           this.getList();
+        },
+        //删除讲师的方法
+        removeDataById(id){
+          // edu.deleteTeacherID(id)
+          // .then(response=>{
+          //   //提示信息
+          //
+          //   //回到列表页面
+          //   this.getList();
+          // })
+          // .catch(error=>{
+          //
+          // })
+          this.$confirm('此操作将永久删除讲师记录, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            edu.deleteTeacherID(id)
+          }).then(response => {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getList();
+          })
         }
       }
 
