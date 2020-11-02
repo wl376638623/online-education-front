@@ -25,6 +25,32 @@
       </el-form-item>
 
       <!-- 讲师头像：TODO -->
+      <!-- 讲师头像 -->
+      <el-form-item label="讲师头像">
+
+        <!-- 头衔缩略图 -->
+        <pan-thumb :image="teacher.avatar"/>
+        <!-- 文件上传按钮 -->
+        <el-button type="primary" icon="el-icon-upload" @click="imagecropperShow=true">更换头像
+        </el-button>
+
+        <!--
+    v-show：是否显示上传组件
+    :key：类似于id，如果一个页面多个图片上传控件，可以做区分
+    :url：后台上传的url地址
+    @close：关闭上传组件
+    @crop-upload-success：上传成功后的回调 -->
+        <image-cropper
+          v-show="imagecropperShow"
+          :width="300"
+          :height="300"
+          :key="imagecropperKey"
+          :url="BASE_API+'/eduoss/fileoss'"
+          field="file"
+          @close="close"
+          @crop-upload-success="cropSuccess"/>
+
+      </el-form-item>
 
       <el-form-item>
         <el-button :disabled="saveBtnDisabled" type="primary" @click="saveOrUpdate">保存</el-button>
@@ -35,7 +61,14 @@
 
 <script>
   import edu from "../../../api/teacher/edu";
+  import ImageCropper from '@/components/ImageCropper'
+  import PanThumb from '@/components/PanThumb'
+
   export default {
+    components:{
+      ImageCropper,
+      PanThumb
+    },
     data(){
       return {
         teacher:{
@@ -46,16 +79,60 @@
           intro:'',
           avatar:''
         },
+        //上传弹框组件是否显示
+        imagecropperShow:false,
+        imagecropperKey: 0, //上传组件的key值
+        BASE_API:process.env.BASE_API, //接口ip地址
         saveBtnDisabled:false //保存按钮是否禁用
       }
     },
     created() {
-
+      if(this.$route.params && this.$route.params.id){
+        const id = this.$route.params.id;
+        this.getInfo(id);
+      }
     },
     methods: {
+      //关闭上传弹框的方法
+      close(){
+        this.imagecropperShow = false;
+      },
+      //上传成功的方法
+      cropSuccess(data){
+        //上传之后返回图片地址
+        this.teacher.avatar=data.url;
+        this.imagecropperShow = false;
+      },
+      //根据讲师ID查询方法
+      getInfo(id) {
+        edu.getTeacherInfo(id)
+          .then(response => {
+            this.teacher=response.data.teacher;
+          })
+      },
       saveOrUpdate(){
-        //添加
-        this.saveTeacher();
+        //判断修改还是添加
+        if(this.teacher.id){
+          //修改
+          this.updateTeacher();
+        }else {
+          //添加
+          this.saveTeacher();
+        }
+      },
+      //修改讲师方法
+      updateTeacher(){
+        edu.updateTeacher(this.teacher)
+        .then(response=>{
+          //1.提示信息
+          this.$message({
+            type:"success",
+            message:"修改成功"
+          })
+          //2.回到列表信息 路由跳转
+          this.$router.push('/teacher/table')
+        })
+
       },
       saveTeacher(){
           edu.addTeacher(this.teacher)
@@ -68,7 +145,7 @@
             //2.回到列表信息 路由跳转
             this.$router.push('/teacher/table')
           })
-          .error(response=>{
+          .catch(response=>{
 
           })
       }
