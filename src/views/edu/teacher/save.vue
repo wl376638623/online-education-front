@@ -77,7 +77,8 @@
           level:1,
           career:'',
           intro:'',
-          avatar:''
+          avatar:'URL\n' +
+            'https://on-edu.oss-ap-northeast-1.aliyuncs.com/2020/11/02/3eaac616-63aa-4609-ae00-513fa8b4daa31.jpg'
         },
         //上传弹框组件是否显示
         imagecropperShow:false,
@@ -96,12 +97,14 @@
       //关闭上传弹框的方法
       close(){
         this.imagecropperShow = false;
+        this.imagecropperKey = this.imagecropperKey + 1;
       },
       //上传成功的方法
       cropSuccess(data){
         //上传之后返回图片地址
         this.teacher.avatar=data.url;
         this.imagecropperShow = false;
+        this.imagecropperKey = this.imagecropperKey + 1;
       },
       //根据讲师ID查询方法
       getInfo(id) {
