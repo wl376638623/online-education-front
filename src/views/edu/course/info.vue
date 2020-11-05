@@ -101,7 +101,7 @@
           teacherId: '',
           lessonNum: 0,
           description: '',
-          cover: '',
+          cover: '/static/02.jpg',
           price: 0
         },
         BASE_API: process.env.BASE_API, // 接口API地址
@@ -178,8 +178,6 @@
             //2跳转
             this.$router.push({ path: '/course/chapter/'+response.data.courseId })
           })
-
-
       }
     }
   }
