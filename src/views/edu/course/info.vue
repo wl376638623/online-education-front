@@ -107,6 +107,7 @@
           cover: '/static/02.jpg',
           price: 0
         },
+        courseId: '',
         BASE_API: process.env.BASE_API, // 接口API地址
         teacherList:[],//封装所有讲师数据
         subjectOneList:[],
@@ -115,12 +116,25 @@
     },
 
     created() {
+      //获取路由ID
+      if (this.$route.params && this.$route.params.id) {
+        this.courseId = this.$route.params.id
+        //根据id查询课程方法
+        this.getInfo();
+      }
       //初始化所有讲师
-      this.getListTeacher()
+      this.getListTeacher();
       this.getOneSubjectList()
     },
 
     methods: {
+      //根据课程ID查询课程信息
+      getInfo() {
+        course.getCourseInfo(this.courseId)
+          .then(response=>{
+            this.courseInfo = response.data.courseInfoVo
+          })
+      },
       //上传封面成功调用的方法
       handleAvatarSuccess(res,file) {
         //上传文件地址
