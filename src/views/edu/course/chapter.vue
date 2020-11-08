@@ -9,7 +9,7 @@
       <el-step title="创建课程大纲"/>
       <el-step title="最终发布"/>
     </el-steps>
-    <el-button type="text">添加章节</el-button>
+    <el-button type="text" @click="dialogChapterFormVisible = true">添加章节</el-button>
     <!-- 章节 -->
     <ul class="chapterList">
       <li
@@ -44,51 +44,68 @@
       <el-button @click="previous">上一步</el-button>
       <el-button :disabled="saveBtnDisabled" type="primary" @click="next">下一步</el-button>
     </div>
+    <!-- 添加和修改章节表单 -->
+    <el-dialog :visible.sync="dialogChapterFormVisible" title="添加章节">
+      <el-form :model="chapter" label-width="120px">
+        <el-form-item label="章节标题">
+          <el-input v-model="chapter.title"/>
+        </el-form-item>
+        <el-form-item label="章节排序">
+          <el-input-number v-model="chapter.sort" :min="0" controls-position="right"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogChapterFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="saveOrUpdate">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import chapter from "../../../api/teacher/chapter";
 
-  export default {
-    data() {
-      return {
-        saveBtnDisabled: false, // 保存按钮是否禁用
-        chapterVideoList:[],
-        courseId: ''
-      }
-    },
+export default {
+  data() {
+    return {
+      saveBtnDisabled: false, // 保存按钮是否禁用
+      chapterVideoList: [],
+      courseId: '',
+      chapter: {},
+      dialogChapterFormVisible: false,//章节弹框的值
+    }
+  },
 
-    created() {
-      //获取路由里面的ID值
-      if (this.$route.params && this.$route.params.id) {
-        this.courseId = this.$route.params.id;
-        //有ID值调用方法
-        this.getChapterVideo()
+  created() {
+    //获取路由里面的ID值
+    if (this.$route.params && this.$route.params.id) {
+      this.courseId = this.$route.params.id;
+      //有ID值调用方法
+      this.getChapterVideo()
 
-      }
+    }
 
-    },
+  },
 
-    methods: {
-      //根据课程ID查询章节和小节的数据列表
-      getChapterVideo() {
-        chapter.getAllChapterVideo(this.courseId)
+  methods: {
+    //根据课程ID查询章节和小节的数据列表
+    getChapterVideo() {
+      chapter.getAllChapterVideo(this.courseId)
         .then(response => {
           this.chapterVideoList = response.data.allChapterVideo
         })
-      },
-      previous() {
-        console.log('previous')
-        this.$router.push({ path: '/course/info/'+this.courseId })
-      },
+    },
+    previous() {
+      console.log('previous')
+      this.$router.push({path: '/course/info/' + this.courseId})
+    },
 
-      next() {
-        console.log('next')
-        this.$router.push({ path: '/course/publish/'+this.courseId })
-      }
+    next() {
+      console.log('next')
+      this.$router.push({path: '/course/publish/' + this.courseId})
     }
   }
+};
 </script>
 <style scoped>
   .chapterList{
