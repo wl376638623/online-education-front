@@ -7,4 +7,34 @@ export default {
       method: 'get'
     })
   },
+  //1 添加章节
+  addChapter(chapter) {
+    return request({
+      url: '/eduservice/chapter/addChapter/',
+      method: 'post',
+      data:chapter
+    })
+  },
+  //根据ID查询章节
+  getChapter(chapterId) {
+    return request({
+      url: '/eduservice/chapter/getChapterInfo/'+chapterId,
+      method: 'get',
+    })
+  },
+  //1 修改章节
+  updateChapter(chapter) {
+    return request({
+      url: '/eduservice/chapter/updateChapter/',
+      method: 'post',
+      data:chapter
+    })
+  },
+  //1 删除章节
+  deleteChapter(chapterId) {
+    return request({
+      url: '/eduservice/chapter/'+chapterId,
+      method: 'delete',
+    })
+  },
 }

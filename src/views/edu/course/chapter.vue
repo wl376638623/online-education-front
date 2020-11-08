@@ -9,7 +9,7 @@
       <el-step title="创建课程大纲"/>
       <el-step title="最终发布"/>
     </el-steps>
-    <el-button type="text" @click="dialogChapterFormVisible = true">添加章节</el-button>
+    <el-button type="text" @click="openChapterDialog()">添加章节</el-button>
     <!-- 章节 -->
     <ul class="chapterList">
       <li
@@ -71,7 +71,10 @@ export default {
       saveBtnDisabled: false, // 保存按钮是否禁用
       chapterVideoList: [],
       courseId: '',
-      chapter: {},
+      chapter: {
+        title: '',
+        sort: 0
+      },
       dialogChapterFormVisible: false,//章节弹框的值
     }
   },
@@ -88,6 +91,32 @@ export default {
   },
 
   methods: {
+    //弹出添加章节的页面
+    openChapterDialog() {
+      //让弹框弹出来
+      this.dialogChapterFormVisible = true
+      this.chapter.title = '';
+      this.chapter.sort = 0
+    },
+    //添加章节
+    addChapter() {
+      this.chapter.courseId = this.courseId
+      chapter.addChapter(this.chapter)
+        .then(response =>{
+          //关闭弹框
+          this.dialogChapterFormVisible = false;
+          //提示页面
+          this.$message({
+            type: 'success',
+            message: '添加章节成功！'
+          })
+          //刷新页面
+          this.getChapterVideo();
+        })
+    },
+    saveOrUpdate() {
+      this.addChapter();
+    },
     //根据课程ID查询章节和小节的数据列表
     getChapterVideo() {
       chapter.getAllChapterVideo(this.courseId)
