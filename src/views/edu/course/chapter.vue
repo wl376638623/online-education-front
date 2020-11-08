@@ -18,11 +18,11 @@
         <p>
           {{ chapter.title }}
 
-<!--          <span class="acts">-->
+          <span class="acts">
 <!--                <el-button type="text">添加课时</el-button>-->
-<!--                <el-button style="" type="text">编辑</el-button>-->
-<!--                <el-button type="text">删除</el-button>-->
-<!--            </span>-->
+                <el-button style="" type="text" @click="openEditChapter(chapter.id)">编辑</el-button>
+                <el-button type="text">删除</el-button>
+            </span>
         </p>
 
         <!-- 视频 -->
@@ -91,6 +91,17 @@ export default {
   },
 
   methods: {
+    //修改章节弹框做数据回显
+    openEditChapter(chapterId) {
+      //弹框
+      this.dialogChapterFormVisible = true
+      //调用接口
+      chapter.getChapter(chapterId)
+      .then(response =>{
+        this.chapter = response.data.chapter
+      })
+
+    },
     //弹出添加章节的页面
     openChapterDialog() {
       //让弹框弹出来
@@ -114,8 +125,29 @@ export default {
           this.getChapterVideo();
         })
     },
+    //修改章节的方法
+    updateChapter() {
+      this.chapter.courseId = this.courseId
+      chapter.updateChapter(this.chapter)
+        .then(response =>{
+          //关闭弹框
+          this.dialogChapterFormVisible = false;
+          //提示页面
+          this.$message({
+            type: 'success',
+            message: '修改章节成功！'
+          })
+          //刷新页面
+          this.getChapterVideo();
+        })
+    },
     saveOrUpdate() {
-      this.addChapter();
+      //判断章节中是否有id
+      if (!this.chapter.id) {
+        this.addChapter();
+      } else {
+        this.updateChapter()
+      }
     },
     //根据课程ID查询章节和小节的数据列表
     getChapterVideo() {
