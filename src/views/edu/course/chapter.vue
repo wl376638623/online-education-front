@@ -21,7 +21,7 @@
           <span class="acts">
 <!--                <el-button type="text">添加课时</el-button>-->
                 <el-button style="" type="text" @click="openEditChapter(chapter.id)">编辑</el-button>
-                <el-button type="text">删除</el-button>
+                <el-button type="text" @click="removeChapter(chapter.id)">删除</el-button>
             </span>
         </p>
 
@@ -64,6 +64,7 @@
 
 <script>
 import chapter from "../../../api/teacher/chapter";
+import edu from "../../../api/teacher/edu";
 
 export default {
   data() {
@@ -91,6 +92,23 @@ export default {
   },
 
   methods: {
+    //删除章节
+    removeChapter(chapterId) {
+      this.$confirm('此操作将永久删除章节信息, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        chapter.deleteChapter(chapterId)
+      }).then(response => {
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+        this.getChapterVideo();
+      })
+
+    },
     //修改章节弹框做数据回显
     openEditChapter(chapterId) {
       //弹框
