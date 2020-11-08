@@ -118,13 +118,16 @@
     created() {
       //获取路由ID
       if (this.$route.params && this.$route.params.id) {
-        this.courseId = this.$route.params.id
+        this.courseId = this.$route.params.id;
         //根据id查询课程方法
         this.getInfo();
+      } else {
+        //初始化所有讲师
+        this.getListTeacher();
+        //初始化一级分类
+        this.getOneSubjectList()
       }
-      //初始化所有讲师
-      this.getListTeacher();
-      this.getOneSubjectList()
+
     },
 
     methods: {
@@ -133,6 +136,23 @@
         course.getCourseInfo(this.courseId)
           .then(response=>{
             this.courseInfo = response.data.courseInfoVo
+            //查询出所有分类
+            subject.getSubjectList()
+            .then(response =>{
+              //获取所有的一级分了
+              this.subjectOneList = response.data.list
+              //讲所有一级ID进行遍历比较当前courseInfo理念的一级ID和所有分类的一级ID是否一样
+              for (let subjectOne of this.subjectOneList) {
+                if (this.courseInfo.subjectParentId == subjectOne.id) {
+                  //获取一级分类的所有有二级分类
+                  this.subjectTwoList = subjectOne.children
+
+                }
+
+              }
+            })
+            //初始化所有讲师
+            this.getListTeacher()
           })
       },
       //上传封面成功调用的方法
