@@ -19,7 +19,7 @@
           {{ chapter.title }}
 
           <span class="acts">
-<!--                <el-button type="text">添加课时</el-button>-->
+                <el-button type="text" @click="openVideo(chapter.id)">添加课时</el-button>
                 <el-button style="" type="text" @click="openEditChapter(chapter.id)">编辑</el-button>
                 <el-button type="text" @click="removeChapter(chapter.id)">删除</el-button>
             </span>
@@ -31,10 +31,10 @@
             v-for="video in chapter.children"
             :key="video.id">
             <p>{{ video.title }}
-<!--              <span class="acts">-->
-<!--                        <el-button type="text">编辑</el-button>-->
-<!--                        <el-button type="text">删除</el-button>-->
-<!--                    </span>-->
+              <span class="acts">
+                        <el-button type="text" @click="editViode(video.id)">编辑</el-button>
+                        <el-button type="text" @click="removeVideo(video.id)">删除</el-button>
+                    </span>
             </p>
           </li>
         </ul>
@@ -59,12 +59,37 @@
         <el-button type="primary" @click="saveOrUpdate">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 添加和修改课时表单 -->
+    <el-dialog :visible.sync="dialogVideoFormVisible" title="添加课时">
+      <el-form :model="video" label-width="120px">
+        <el-form-item label="课时标题">
+          <el-input v-model="video.title"/>
+        </el-form-item>
+        <el-form-item label="课时排序">
+          <el-input-number v-model="video.sort" :min="0" controls-position="right"/>
+        </el-form-item>
+        <el-form-item label="是否免费">
+          <el-radio-group v-model="video.free">
+            <el-radio :label="true">免费</el-radio>
+            <el-radio :label="false">默认</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="上传视频">
+          <!-- TODO -->
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogVideoFormVisible = false">取 消</el-button>
+        <el-button :disabled="saveVideoBtnDisabled" type="primary" @click="saveOrUpdateVideo">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import chapter from "../../../api/teacher/chapter";
 import edu from "../../../api/teacher/edu";
+import video from "../../../api/teacher/video";
 
 export default {
   data() {
@@ -72,11 +97,19 @@ export default {
       saveBtnDisabled: false, // 保存按钮是否禁用
       chapterVideoList: [],
       courseId: '',
+      videoId:'',
       chapter: {
         title: '',
         sort: 0
       },
+      video: {
+        title: '',
+        sort:0,
+        free:0,
+        videoSourceId:''
+      },
       dialogChapterFormVisible: false,//章节弹框的值
+      dialogVideoFormVisible: false,
     }
   },
 
@@ -92,6 +125,86 @@ export default {
   },
 
   methods: {
+    //点击窗口进行回显
+    editViode(videoId) {
+      //弹框
+      this.dialogVideoFormVisible = true
+      //调用接口
+      video.getVideo(videoId)
+        .then(response =>{
+          this.video = response.data.video
+        })
+
+    },
+    //更新小节方法
+    updateVideo() {
+      this.video.videoId = this.videoId
+      video.updateVideo(this.video)
+        .then(response =>{
+          //关闭弹框
+          this.dialogVideoFormVisible = false;
+          //提示页面
+          this.$message({
+            type: 'success',
+            message: '修改小节成功！'
+          })
+          //刷新页面
+          this.getChapterVideo();
+        })
+    },
+
+    //删除小节方法
+    removeVideo(videoId) {
+        this.$confirm('此操作将永久删除小节信息, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          video.deleteVideo(videoId)
+        }).then(response => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+          this.getChapterVideo();
+        })
+    },
+    //添加小节弹框的方法
+    openVideo(chapterId) {
+      this.dialogVideoFormVisible = true
+      //设置章节ID
+      this.video.chapterId = chapterId
+      //情况弹框里面的值
+      this.video.title = ''
+      this.video.sort = 0
+      this.video.free= 0
+      this.video.videoSourceId=''
+    },
+    //添加小节方法
+    saveVideo() {
+      //设置课程id
+      this.video.courseId = this.courseId
+      video.addVideo(this.video)
+      .then(response =>{
+        //关闭弹框
+        this.dialogVideoFormVisible = false
+        //提示
+        this.$message({
+          type: 'success',
+          message: '添加小节成功!'
+        })
+        //刷新页面
+        this.getChapterVideo();
+      })
+    },
+    //保存或者修改方法
+    saveOrUpdateVideo() {
+      if (!this.video.id) {
+        this.saveVideo();
+      } else {
+        this.updateVideo();
+      }
+    },
     //删除章节
     removeChapter(chapterId) {
       this.$confirm('此操作将永久删除章节信息, 是否继续?', '提示', {
