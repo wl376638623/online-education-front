@@ -25,6 +25,13 @@ export default {
       method: 'post',
       data:courseInfo
     })
+  },
+  //通过id查询课程确认信息
+  getPublishCourseInfo(id) {
+    return request({
+      url: '/eduservice/course/getPublishCourseInfo/'+id,
+      method: 'get',
+    })
   }
 
 
