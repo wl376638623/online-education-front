@@ -63,13 +63,21 @@
         })
       },
       previous() {
-        console.log('previous')
         this.$router.push({ path: '/course/chapter/'+this.courseId })
       },
 
       publish() {
-        console.log('publish')
-        this.$router.push({ path: '/course/list' })
+        course.pubulishCourse(this.courseId).
+          then(response=>{
+            //提示信息
+          this.$message({
+            type:'success',
+            message:'发布成功'
+          });
+          //跳转页表烈面
+          this.$router.push({ path: '/course/list' })
+        })
+
       }
     }
   }

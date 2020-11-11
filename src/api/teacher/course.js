@@ -32,7 +32,32 @@ export default {
       url: '/eduservice/course/getPublishCourseInfo/'+id,
       method: 'get',
     })
-  }
+  },
+  //课程的最终发布
+  pubulishCourse(id) {
+    return request({
+      url: '/eduservice/course/publishCourse/'+id,
+      method: 'post',
+    })
+  },
+  //课程列表
+  getListCourse() {
+    return request({
+      url: '/eduservice/course',
+      method: 'get',
+    })
+  },
+  //1.课程列表（条件查询分页）
+  //current分页的当前页 limit 每页记录数 teacherQuery 条件对象
+  getCourseListPage(current,limit,courseQuery){
+    return request({
+      // url: '/table/list',
+      url: `/eduservice/course/pageCourseCondition/${current}/${limit}`,
+      method: 'post',
+      //把对象转换成json传递到接口里面
+      data:courseQuery
+    })
+  },
 
 
 }
