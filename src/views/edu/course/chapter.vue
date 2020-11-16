@@ -95,10 +95,11 @@
             </el-tooltip>
           </el-upload>
         </el-form-item>
+
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVideoFormVisible = false">取 消</el-button>
-        <el-button :disabled="saveVideoBtnDisabled" type="primary" @click="saveOrUpdateVideo">确 定</el-button>
+        <el-button type="primary" @click="saveOrUpdateVideo">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -112,23 +113,24 @@ import video from "../../../api/teacher/video";
 export default {
   data() {
     return {
-      saveBtnDisabled: false, // 保存按钮是否禁用
-      chapterVideoList: [],
-      courseId: '',
-      videoId:'',
-      chapter: {
+      saveBtnDisabled:false,
+      courseId:'',//课程id
+      chapterVideoList:[],
+      chapter:{ //封装章节数据
         title: '',
         sort: 0
       },
       video: {
         title: '',
-        sort:0,
-        free:0,
-        videoSourceId:'',
-        videoOriginalName:''
+        sort: 0,
+        free: 0,
+        videoSourceId: '',
+        videoOriginalName:''//视频名称
       },
-      dialogChapterFormVisible: false,//章节弹框的值
-      dialogVideoFormVisible: false,
+      dialogChapterFormVisible:false,//章节弹框
+      dialogVideoFormVisible:false, //小节弹框
+
+
       fileList: [],//上传文件列表
       BASE_API: process.env.BASE_API // 接口API地址
     }
@@ -146,6 +148,24 @@ export default {
   },
 
   methods: {
+    //点击确定调用的方法
+    handleVodRemove() {
+      video.deleteAliyunVod(this.video.videoSourceId)
+      .then(response=>{
+        //提示信息
+        this.$message({
+          type:'success',
+          message:'删除视频成功'
+        })
+        this.fileList = []
+        this.video.videoSourceId= ''
+        this.video.videoOriginalName=''
+      })
+    },
+    //点击x调用的方法
+    beforeVodRemove(file,fileList) {
+      return this.$confirm('确认移除 ${file.name}?')
+    },
     //上传视频之前的方法
     handleUploadExceed() {
       this.$message.warning('想要重新上传视频,请先删除已上传的视频')
@@ -153,6 +173,7 @@ export default {
     //上传视频成功调用的方法
     handleVodUploadSuccess(response,file,fileList) {
       //上传之后的视频id赋值
+     this.video.videoSourceId = response.data.videoId
       this.video.videoOriginalName=file.name
 
     },
@@ -209,7 +230,7 @@ export default {
       this.video.title = ''
       this.video.sort = 0
       this.video.free= 0
-      this.video.videoSourceId=''
+      this.video.videoSourceId = ''
     },
     //添加小节方法
     saveVideo() {
@@ -232,6 +253,7 @@ export default {
     saveOrUpdateVideo() {
       if (!this.video.id) {
         this.saveVideo();
+        console.log(this.video);
       } else {
         this.updateVideo();
       }
