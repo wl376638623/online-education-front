@@ -138,13 +138,13 @@ export const constantRouterMap = [
       {
         path: 'create',
         name: '生成数据',
-        component: () => import('@/views/table/index'),
+        component: () => import('@/views/sta/create'),
         meta: { title: '生成数据', icon: 'table' }
       },
       {
         path: 'show',
         name: '图标显示',
-        component: () => import('@/views/tree/index'),
+        component: () => import('@/views/sta/show'),
         meta: { title: '图标显示', icon: 'tree' }
       }
     ]
