@@ -129,6 +129,27 @@ export const constantRouterMap = [
   },
 
   {
+    path: '/sta',
+    component: Layout,
+    redirect: '/sta/table',
+    name: '统计分析',
+    meta: { title: '统计分析', icon: 'example' },
+    children: [
+      {
+        path: 'create',
+        name: '生成数据',
+        component: () => import('@/views/table/index'),
+        meta: { title: '生成数据', icon: 'table' }
+      },
+      {
+        path: 'show',
+        name: '图标显示',
+        component: () => import('@/views/tree/index'),
+        meta: { title: '图标显示', icon: 'tree' }
+      }
+    ]
+  },
+  {
     path: '/example',
     component: Layout,
     redirect: '/example/table',

@@ -78,13 +78,13 @@
   import course from "../../../api/teacher/course";
   import edu from "../../../api/teacher/edu";
   export default {
-    data(){
+    data: function () {
       return {
-        list:null,//查询之后接口返回的集合
-        page:1,//当前页
-        limit:7,//每页记录书
-        total:0,//总记录数
-        courseQuery:{},//条件封装对象
+        list: null,//查询之后接口返回的集合
+        page: 1,//当前页
+        limit: 7,//每页记录书
+        total: 0,//总记录数
+        courseQuery: {},//条件封装对象
       }
     },
     created() {//页面渲染执行
@@ -94,7 +94,7 @@
     methods: {//创建具体的方法调用teacher.js定义的方法
       //删除功能
       //删除讲师的方法
-      removeDataById(id){
+      removeDataById(id) {
         // edu.deleteTeacherID(id)
         // .then(response=>{
         //   //提示信息
