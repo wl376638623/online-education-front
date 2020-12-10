@@ -8,5 +8,12 @@ export default {
       method: 'post',
     })
   },
+  //2 获取到统计数据
+  getDataSta(searchObj) {
+    return request({
+      url: `/staservice/sta/showData/${searchObj.type}/${searchObj.begin}/${searchObj.end}`,
+      method: 'get',
+    })
+  }
 }
 
